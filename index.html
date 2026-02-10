@@ -210,11 +210,24 @@
         const pinError = document.getElementById('pinError');
         const iframes = Array.from(document.querySelectorAll('iframe'));
 
+        function setMuteParam(urlString, muteValue) {
+            const url = new URL(urlString);
+            url.searchParams.set('mute', String(muteValue));
+            url.searchParams.set('autoplay', '1');
+            return url.toString();
+        }
+
         function loadIframes() {
-            iframes.forEach((iframe) => {
+            iframes.forEach((iframe, index) => {
                 const targetSrc = iframe.getAttribute('data-src');
-                if (targetSrc && iframe.src !== targetSrc) {
-                    iframe.src = targetSrc;
+                if (!targetSrc) {
+                    return;
+                }
+                const shouldMute = index !== 0;
+                const nextSrc = setMuteParam(targetSrc, shouldMute ? 1 : 0);
+                iframe.setAttribute('data-src', nextSrc);
+                if (iframe.src !== nextSrc) {
+                    iframe.src = nextSrc;
                 }
             });
         }
@@ -262,19 +275,21 @@
             wrapper.appendChild(openButton);
         });
 
-        function reloadIframe(iframe) {
+        function reloadIframe(iframe, index) {
             const baseSrc = iframe.getAttribute('data-src') || iframe.src;
             if (!baseSrc || baseSrc === 'about:blank') {
                 return;
             }
-            const url = new URL(baseSrc);
+            const shouldMute = index !== 0;
+            const nextSrc = setMuteParam(baseSrc, shouldMute ? 1 : 0);
+            const url = new URL(nextSrc);
             url.searchParams.set('refresh', Date.now());
             iframe.src = url.toString();
             iframe.setAttribute('data-src', url.toString());
         }
 
         document.getElementById('reloadAllBtn').addEventListener('click', () => {
-            iframes.forEach((iframe) => reloadIframe(iframe));
+            iframes.forEach((iframe, index) => reloadIframe(iframe, index));
         });
     </script>
 </body>
