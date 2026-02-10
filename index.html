@@ -39,8 +39,8 @@
         }
 
         .btn {
-            padding: 12px 16px;
-            font-size: 14px;
+            padding: 14px 18px;
+            font-size: 16px;
             border: none;
             border-radius: 999px;
             cursor: pointer;
@@ -56,8 +56,8 @@
 
         .video-grid {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 18px;
         }
 
         .video-wrapper {
@@ -150,39 +150,18 @@
             right: 12px;
             z-index: 20;
             display: flex;
-            align-items: center;
-            gap: 10px;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 12px;
         }
 
-        .sound-controls {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background-color: rgba(0, 0, 0, 0.4);
-            border: 1px solid #2a2a2a;
-            border-radius: 999px;
-            padding: 4px 6px;
-        }
-
-        .sound-label {
-            font-size: 12px;
-            color: #bdbdbd;
-            padding: 0 6px;
-        }
-
-        .sound-btn {
-            border: 1px solid transparent;
-            background-color: #1d1d1d;
+        .btn-secondary {
+            background-color: #1f1f1f;
             color: #e0e0e0;
-            border-radius: 999px;
-            padding: 6px 10px;
-            font-size: 12px;
-            cursor: pointer;
         }
 
-        .sound-btn.is-active {
-            background-color: #2e7d32;
-            color: #fff;
+        .btn-secondary:hover {
+            background-color: #2a2a2a;
         }
 
         button:focus,
@@ -193,8 +172,8 @@
 
         @media (pointer: coarse) {
             .btn {
-                padding: 14px 18px;
-                font-size: 16px;
+                padding: 18px 22px;
+                font-size: 18px;
             }
 
             .open-btn {
@@ -212,8 +191,17 @@
                 grid-template-columns: 1fr;
             }
             .top-controls {
-                top: 10px;
-                right: 10px;
+                top: 12px;
+                right: 12px;
+            }
+            body {
+                overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-top: 64px;
+            }
+            .btn {
+                padding: 10px 14px;
+                font-size: 14px;
             }
         }
     </style>
@@ -250,40 +238,10 @@
                     scrolling="no">
                 </iframe>
             </div>
-
-            <div class="video-wrapper" id="video-3">
-                <iframe 
-                    id="iframe-3"
-                    src="about:blank"
-                    data-src="https://www.oranews.tv/livetv2.php?autoplay=1&mute=0&controls=1"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen
-                    scrolling="no">
-                </iframe>
-            </div>
-
-            <div class="video-wrapper" id="video-4">
-                <iframe 
-                    id="iframe-4"
-                    src="about:blank"
-                    data-src="https://pluto.tv/us/live-tv/5df97894467dfa00091c873c?utm_source=google&utm_medium=paidsearch&utm_campaign=12080790684&utm_term=pluto+tv&utm_creative=617765758688&device=c&campaign=Search_Brand_Desktop_E&gad_source=1&gad_campaignid=12080790684&gclid=CjwKCAiAqKbMBhBmEiwAZ3UboI7fn6XAaN2NeLmneAmghPDxmgqRvO3YOXkPUJi1YRLypUnmsIF46xoCp3kQAvD_BwE&autoplay=1&mute=1&controls=1"
-                    allow="autoplay; fullscreen; picture-in-picture"
-                    allowfullscreen
-                    scrolling="no">
-                </iframe>
-            </div>
         </div>
     </div>
 
     <div class="top-controls">
-        <div class="sound-controls" aria-label="Audio source">
-            <span class="sound-label">Sound</span>
-            <button class="sound-btn is-active" data-sound="0" type="button">1</button>
-            <button class="sound-btn" data-sound="1" type="button">2</button>
-            <button class="sound-btn" data-sound="2" type="button">3</button>
-            <button class="sound-btn" data-sound="3" type="button">4</button>
-            <button class="sound-btn" data-sound="mute" type="button">Mute All</button>
-        </div>
         <button class="btn" id="reloadAllBtn">Reload All</button>
     </div>
 
@@ -295,9 +253,7 @@
         const pinSubmit = document.getElementById('pinSubmit');
         const pinError = document.getElementById('pinError');
         const iframes = Array.from(document.querySelectorAll('iframe'));
-        const soundButtons = Array.from(document.querySelectorAll('[data-sound]'));
-        let forceMuteAll = false;
-        let activeSoundIndex = 0;
+        let audioEnabled = true;
 
         function safeStorageGet(key) {
             try {
@@ -347,7 +303,7 @@
                     if (!targetSrc) {
                         return;
                     }
-                    const shouldMute = forceMuteAll ? 1 : (index === activeSoundIndex ? 0 : 1);
+                    const shouldMute = index === 0 ? (audioEnabled ? 0 : 1) : 1;
                     const nextSrc = setMuteParam(targetSrc, shouldMute);
                     iframe.setAttribute('data-src', nextSrc);
                     if (iframe.src !== nextSrc) {
@@ -396,40 +352,10 @@
             openButton.addEventListener('click', () => {
                 const targetSrc = iframe.getAttribute('data-src') || iframe.src;
                 if (targetSrc && targetSrc !== 'about:blank') {
-                    const popup = window.open(targetSrc, '_blank', 'noopener');
-                    if (!popup) {
-                        window.location.href = targetSrc;
-                    }
+                    window.open(targetSrc, '_blank', 'noopener');
                 }
             });
             wrapper.appendChild(openButton);
-        });
-
-        function setSoundSelection(value) {
-            if (value === 'mute') {
-                forceMuteAll = true;
-            } else {
-                forceMuteAll = false;
-                activeSoundIndex = Number(value);
-            }
-            soundButtons.forEach((button) => {
-                const buttonValue = button.getAttribute('data-sound');
-                const isActive = forceMuteAll
-                    ? buttonValue === 'mute'
-                    : buttonValue === String(activeSoundIndex);
-                button.classList.toggle('is-active', isActive);
-                button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-            });
-            iframes.forEach((iframe, index) => reloadIframe(iframe, index));
-        }
-
-        soundButtons.forEach((button) => {
-            button.addEventListener('click', () => {
-                const value = button.getAttribute('data-sound');
-                if (value) {
-                    setSoundSelection(value);
-                }
-            });
         });
 
         function reloadIframe(iframe, index) {
@@ -437,7 +363,7 @@
             if (!baseSrc || baseSrc === 'about:blank') {
                 return;
             }
-            const shouldMute = forceMuteAll ? 1 : (index === activeSoundIndex ? 0 : 1);
+            const shouldMute = index === 0 ? (audioEnabled ? 0 : 1) : 1;
             const nextSrc = setMuteParam(baseSrc, shouldMute);
             try {
                 const url = new URL(nextSrc);
