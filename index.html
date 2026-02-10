@@ -249,37 +249,40 @@
 
         // Refresh button handler
         document.getElementById('refreshBtn').addEventListener('click', function() {
+            let loadedCount = 0;
+            
             for (let i = 1; i <= totalVideos; i++) {
                 const iframe = document.getElementById(`iframe-${i}`);
                 const currentSrc = iframe.src;
                 
-                // Remove and re-add the timestamp to force refresh
+                // Add a timestamp parameter to force refresh
                 const url = new URL(currentSrc);
-                url.searchParams.set('t', Date.now());
+                url.searchParams.set('refresh', Date.now());
+                
+                // Set up load handler for this iframe
+                iframe.addEventListener('load', function onIframeLoad() {
+                    loadedCount++;
+                    if (loadedCount === totalVideos) {
+                        // All iframes have loaded, reinitialize players
+                        players = [];
+                        for (let j = 1; j <= totalVideos; j++) {
+                            players.push(new YT.Player(`iframe-${j}`, {
+                                events: {
+                                    'onReady': onPlayerReady
+                                }
+                            }));
+                        }
+                    }
+                    // Remove the event listener after first load
+                    iframe.removeEventListener('load', onIframeLoad);
+                }, { once: true });
+                
                 iframe.src = url.toString();
             }
             
             // Reset to first video being unmuted after refresh
             currentUnmutedIndex = 0;
-            
-            // Wait a bit for iframes to reload, then update states
-            setTimeout(() => {
-                // Reinitialize players after refresh
-                players = [];
-                for (let i = 1; i <= totalVideos; i++) {
-                    players.push(new YT.Player(`iframe-${i}`, {
-                        events: {
-                            'onReady': onPlayerReady
-                        }
-                    }));
-                }
-            }, 1000);
         });
-
-        // Initialize window.onYouTubeIframeAPIReady in case API loads before script
-        if (typeof window.onYouTubeIframeAPIReady === 'undefined') {
-            window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
-        }
     </script>
 </body>
 </html>
