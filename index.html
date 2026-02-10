@@ -13,72 +13,46 @@
 
         body {
             font-family: Arial, sans-serif;
-            background-color: #1a1a1a;
+            background-color: #0d0d0d;
             color: #fff;
-            padding: 20px;
+            padding: 8px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-        }
-
-        .controls {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
         .btn {
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 14px;
+            font-size: 13px;
             border: none;
-            border-radius: 5px;
+            border-radius: 999px;
             cursor: pointer;
-            background-color: #4CAF50;
+            background-color: #2e7d32;
             color: white;
-            transition: background-color 0.3s;
+            transition: background-color 0.2s;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
         }
 
         .btn:hover {
-            background-color: #45a049;
-        }
-
-        .btn-refresh {
-            background-color: #2196F3;
-        }
-
-        .btn-refresh:hover {
-            background-color: #0b7dda;
+            background-color: #256628;
         }
 
         .video-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 16px;
         }
 
         .video-wrapper {
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            padding-bottom: 56.25%;
             height: 0;
             overflow: hidden;
             background-color: #000;
-            border: 3px solid transparent;
-            border-radius: 8px;
-            transition: border-color 0.3s;
-        }
-
-        .video-wrapper.active {
-            border-color: #4CAF50;
+            border: 1px solid #1f1f1f;
+            border-radius: 10px;
         }
 
         .video-wrapper iframe {
@@ -90,92 +64,132 @@
             border: none;
         }
 
-        .video-label {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 3px;
+        .pin-gate {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+
+        .pin-card {
+            width: min(360px, 92vw);
+            background-color: #151515;
+            border: 1px solid #2a2a2a;
+            border-radius: 12px;
+            padding: 18px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .pin-title {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .pin-input {
+            width: 100%;
+            padding: 10px 12px;
             font-size: 14px;
-            z-index: 10;
+            border-radius: 8px;
+            border: 1px solid #2f2f2f;
+            background-color: #0d0d0d;
+            color: #fff;
+            margin-bottom: 10px;
         }
 
-        .status-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: rgba(0, 0, 0, 0.7);
-            padding: 5px 10px;
-            border-radius: 3px;
+        .pin-error {
+            color: #ff8a80;
             font-size: 12px;
-            z-index: 10;
+            min-height: 16px;
+            margin-bottom: 8px;
         }
 
-        .status-indicator.unmuted {
-            color: #4CAF50;
+        .open-btn {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            z-index: 5;
+            padding: 6px 10px;
+            font-size: 12px;
+            border: none;
+            border-radius: 999px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
         }
 
-        .status-indicator.muted {
-            color: #ff9800;
+        .open-btn:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .top-controls {
+            position: fixed;
+            top: 12px;
+            right: 12px;
+            z-index: 20;
         }
 
         @media (max-width: 768px) {
             .video-grid {
                 grid-template-columns: 1fr;
             }
+            .top-controls {
+                top: 10px;
+                right: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Live Video Channels</h1>
-        
-        <div class="controls">
-            <button class="btn" id="muteUnmuteBtn">Mute/Unmute Next</button>
-            <button class="btn btn-refresh" id="refreshBtn">Refresh Videos</button>
+    <div class="pin-gate" id="pinGate" aria-live="polite">
+        <div class="pin-card">
+            <div class="pin-title">Enter PIN to access</div>
+            <input class="pin-input" id="pinInput" type="password" inputmode="numeric" placeholder="PIN" />
+            <div class="pin-error" id="pinError"></div>
+            <button class="btn" id="pinSubmit">Unlock</button>
         </div>
-
+    </div>
+    <div class="container">
         <div class="video-grid">
-            <div class="video-wrapper active" id="video-1">
-                <div class="video-label">Channel 1</div>
-                <div class="status-indicator unmuted">🔊 Unmuted</div>
+            <div class="video-wrapper" id="video-1">
                 <iframe 
                     id="iframe-1"
-                    src="https://www.youtube.com/embed/jfKfPfyJRdk?autoplay=1&mute=0&controls=1&enablejsapi=1"
+                    src="about:blank"
+                    data-src="https://s365z2.bbvipal.net/player1.php?autoplay=1&mute=0&controls=1"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>
             </div>
 
             <div class="video-wrapper" id="video-2">
-                <div class="video-label">Channel 2</div>
-                <div class="status-indicator muted">🔇 Muted</div>
                 <iframe 
                     id="iframe-2"
-                    src="https://www.youtube.com/embed/21X5lGlDOfg?autoplay=1&mute=1&controls=1&enablejsapi=1"
+                    src="about:blank"
+                    data-src="https://s365z2.bbvipal.net/player2.php?autoplay=1&mute=0&controls=1"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>
             </div>
 
             <div class="video-wrapper" id="video-3">
-                <div class="video-label">Channel 3</div>
-                <div class="status-indicator muted">🔇 Muted</div>
                 <iframe 
                     id="iframe-3"
-                    src="https://www.youtube.com/embed/5qap5aO4i9A?autoplay=1&mute=1&controls=1&enablejsapi=1"
+                    src="about:blank"
+                    data-src="https://www.oranews.tv/livetv2.php?autoplay=1&mute=0&controls=1"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>
             </div>
 
             <div class="video-wrapper" id="video-4">
-                <div class="video-label">Channel 4</div>
-                <div class="status-indicator muted">🔇 Muted</div>
                 <iframe 
                     id="iframe-4"
-                    src="https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&mute=1&controls=1&enablejsapi=1"
+                    src="about:blank"
+                    data-src="https://pluto.tv/us/live-tv/5df97894467dfa00091c873c?utm_source=google&utm_medium=paidsearch&utm_campaign=12080790684&utm_term=pluto+tv&utm_creative=617765758688&device=c&campaign=Search_Brand_Desktop_E&gad_source=1&gad_campaignid=12080790684&gclid=CjwKCAiAqKbMBhBmEiwAZ3UboI7fn6XAaN2NeLmneAmghPDxmgqRvO3YOXkPUJi1YRLypUnmsIF46xoCp3kQAvD_BwE&autoplay=1&mute=1&controls=1"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowfullscreen>
                 </iframe>
@@ -183,105 +197,84 @@
         </div>
     </div>
 
+    <div class="top-controls">
+        <button class="btn" id="reloadAllBtn">Reload All</button>
+    </div>
+
     <script>
-        let currentUnmutedIndex = 0;
-        const totalVideos = 4;
+        const REQUIRED_PIN = '1212';
+        const PIN_STORAGE_KEY = 'video_app_pin_ok';
+        const pinGate = document.getElementById('pinGate');
+        const pinInput = document.getElementById('pinInput');
+        const pinSubmit = document.getElementById('pinSubmit');
+        const pinError = document.getElementById('pinError');
+        const iframes = Array.from(document.querySelectorAll('iframe'));
 
-        // YouTube iframe API
-        let players = [];
-        
-        // Load YouTube iframe API
-        const tag = document.createElement('script');
-        tag.src = "https://www.youtube.com/iframe_api";
-        const firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        // This function will be called when YouTube API is ready
-        function onYouTubeIframeAPIReady() {
-            // Initialize players
-            for (let i = 1; i <= totalVideos; i++) {
-                players.push(new YT.Player(`iframe-${i}`, {
-                    events: {
-                        'onReady': onPlayerReady
-                    }
-                }));
-            }
-        }
-
-        function onPlayerReady(event) {
-            // Set initial mute states
-            updateMuteStates();
-        }
-
-        function updateMuteStates() {
-            for (let i = 0; i < totalVideos; i++) {
-                const videoWrapper = document.getElementById(`video-${i + 1}`);
-                const statusIndicator = videoWrapper.querySelector('.status-indicator');
-                
-                if (i === currentUnmutedIndex) {
-                    // Unmute this video
-                    if (players[i] && players[i].unMute) {
-                        players[i].unMute();
-                    }
-                    videoWrapper.classList.add('active');
-                    statusIndicator.textContent = '🔊 Unmuted';
-                    statusIndicator.classList.remove('muted');
-                    statusIndicator.classList.add('unmuted');
-                } else {
-                    // Mute other videos
-                    if (players[i] && players[i].mute) {
-                        players[i].mute();
-                    }
-                    videoWrapper.classList.remove('active');
-                    statusIndicator.textContent = '🔇 Muted';
-                    statusIndicator.classList.remove('unmuted');
-                    statusIndicator.classList.add('muted');
+        function loadIframes() {
+            iframes.forEach((iframe) => {
+                const targetSrc = iframe.getAttribute('data-src');
+                if (targetSrc && iframe.src !== targetSrc) {
+                    iframe.src = targetSrc;
                 }
+            });
+        }
+
+        function unlockIfValidPin() {
+            const enteredPin = pinInput.value.trim();
+            if (enteredPin === REQUIRED_PIN) {
+                localStorage.setItem(PIN_STORAGE_KEY, 'true');
+                pinGate.style.display = 'none';
+                pinInput.value = '';
+                pinError.textContent = '';
+                loadIframes();
+            } else {
+                pinError.textContent = 'Incorrect PIN';
             }
         }
 
-        // Mute/Unmute Next button handler
-        document.getElementById('muteUnmuteBtn').addEventListener('click', function() {
-            // Move to next video
-            currentUnmutedIndex = (currentUnmutedIndex + 1) % totalVideos;
-            updateMuteStates();
+        if (localStorage.getItem(PIN_STORAGE_KEY) === 'true') {
+            pinGate.style.display = 'none';
+            loadIframes();
+        }
+
+        pinSubmit.addEventListener('click', unlockIfValidPin);
+        pinInput.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                unlockIfValidPin();
+            }
         });
 
-        // Refresh button handler
-        document.getElementById('refreshBtn').addEventListener('click', function() {
-            let loadedCount = 0;
-            
-            for (let i = 1; i <= totalVideos; i++) {
-                const iframe = document.getElementById(`iframe-${i}`);
-                const currentSrc = iframe.src;
-                
-                // Add a timestamp parameter to force refresh
-                const url = new URL(currentSrc);
-                url.searchParams.set('refresh', Date.now());
-                
-                // Set up load handler for this iframe
-                iframe.addEventListener('load', function onIframeLoad() {
-                    loadedCount++;
-                    if (loadedCount === totalVideos) {
-                        // All iframes have loaded, reinitialize players
-                        players = [];
-                        for (let j = 1; j <= totalVideos; j++) {
-                            players.push(new YT.Player(`iframe-${j}`, {
-                                events: {
-                                    'onReady': onPlayerReady
-                                }
-                            }));
-                        }
-                    }
-                    // Remove the event listener after first load
-                    iframe.removeEventListener('load', onIframeLoad);
-                }, { once: true });
-                
-                iframe.src = url.toString();
+        iframes.forEach((iframe) => {
+            const wrapper = iframe.closest('.video-wrapper');
+            if (!wrapper) {
+                return;
             }
-            
-            // Reset to first video being unmuted after refresh
-            currentUnmutedIndex = 0;
+            const openButton = document.createElement('button');
+            openButton.type = 'button';
+            openButton.className = 'open-btn';
+            openButton.textContent = 'Open';
+            openButton.addEventListener('click', () => {
+                const targetSrc = iframe.getAttribute('data-src') || iframe.src;
+                if (targetSrc && targetSrc !== 'about:blank') {
+                    window.open(targetSrc, '_blank', 'noopener');
+                }
+            });
+            wrapper.appendChild(openButton);
+        });
+
+        function reloadIframe(iframe) {
+            const baseSrc = iframe.getAttribute('data-src') || iframe.src;
+            if (!baseSrc || baseSrc === 'about:blank') {
+                return;
+            }
+            const url = new URL(baseSrc);
+            url.searchParams.set('refresh', Date.now());
+            iframe.src = url.toString();
+            iframe.setAttribute('data-src', url.toString());
+        }
+
+        document.getElementById('reloadAllBtn').addEventListener('click', () => {
+            iframes.forEach((iframe) => reloadIframe(iframe));
         });
     </script>
 </body>
