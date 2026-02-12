@@ -5,206 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="format-detection" content="telephone=no">
     <title>Live Video Channels</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html,
-        body {
-            height: 100%;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #0d0d0d;
-            color: #fff;
-            padding: 8px;
-            line-height: 1.4;
-            -webkit-text-size-adjust: 100%;
-            overflow: hidden;
-            overscroll-behavior: none;
-        }
-
-        body::-webkit-scrollbar {
-            width: 0;
-            height: 0;
-        }
-
-        .container {
-            max-width: 1600px;
-            margin: 0 auto;
-        }
-
-        .btn {
-            padding: 14px 18px;
-            font-size: 16px;
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            background-color: #2e7d32;
-            color: white;
-            transition: background-color 0.2s;
-            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
-        }
-
-        .btn:hover {
-            background-color: #256628;
-        }
-
-        .video-grid {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 18px;
-        }
-
-        .video-wrapper {
-            position: relative;
-            padding-bottom: 56.25%;
-            height: 0;
-            overflow: hidden;
-            background-color: #000;
-            border: 1px solid #1f1f1f;
-            border-radius: 10px;
-        }
-
-        .video-wrapper iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        .pin-gate {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(0, 0, 0, 0.9);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-        }
-
-        .pin-card {
-            width: min(360px, 92vw);
-            background-color: #151515;
-            border: 1px solid #2a2a2a;
-            border-radius: 12px;
-            padding: 18px;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .pin-title {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .pin-input {
-            width: 100%;
-            padding: 12px 12px;
-            font-size: 15px;
-            border-radius: 8px;
-            border: 1px solid #2f2f2f;
-            background-color: #0d0d0d;
-            color: #fff;
-            margin-bottom: 10px;
-        }
-
-        .pin-error {
-            color: #ff8a80;
-            font-size: 12px;
-            min-height: 16px;
-            margin-bottom: 8px;
-        }
-
-        .open-btn {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            z-index: 5;
-            padding: 8px 12px;
-            font-size: 12px;
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: #fff;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
-        }
-
-        .open-btn:hover {
-            background-color: rgba(0, 0, 0, 0.8);
-        }
-
-        .top-controls {
-            position: fixed;
-            top: 12px;
-            right: 12px;
-            z-index: 20;
-            display: flex;
-            flex-direction: column;
-            align-items: stretch;
-            gap: 12px;
-        }
-
-        .btn-secondary {
-            background-color: #1f1f1f;
-            color: #e0e0e0;
-        }
-
-        .btn-secondary:hover {
-            background-color: #2a2a2a;
-        }
-
-        button:focus,
-        input:focus {
-            outline: 3px solid #8bc34a;
-            outline-offset: 2px;
-        }
-
-        @media (pointer: coarse) {
-            .btn {
-                padding: 18px 22px;
-                font-size: 18px;
-            }
-
-            .open-btn {
-                padding: 10px 14px;
-                font-size: 13px;
-            }
-
-            .pin-input {
-                font-size: 16px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .video-grid {
-                grid-template-columns: 1fr;
-            }
-            .top-controls {
-                top: 12px;
-                right: 12px;
-            }
-            body {
-                overflow-y: auto;
-                -webkit-overflow-scrolling: touch;
-                padding-top: 64px;
-            }
-            .btn {
-                padding: 10px 14px;
-                font-size: 14px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="pin-gate" id="pinGate" aria-live="polite">
@@ -238,148 +39,56 @@
                     scrolling="no">
                 </iframe>
             </div>
+
+            <div class="video-wrapper" id="video-3">
+                <iframe 
+                    id="iframe-3"
+                    src="about:blank"
+                    data-src="https://www.oranews.tv/livetv2.php?autoplay=1&mute=0&controls=1"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    scrolling="no">
+                </iframe>
+            </div>
+
+            <div class="video-wrapper" id="video-4">
+                <iframe 
+                    id="iframe-4"
+                    src="about:blank"
+                    data-src="https://balkanweb.com/tvplayer-2/?v=7?autoplay=1&mute=0&controls=1"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                    scrolling="no">
+                </iframe>
+            </div>
         </div>
     </div>
 
     <div class="top-controls">
-        <button class="btn" id="reloadAllBtn">Reload All</button>
+        <button class="btn btn-compact" id="reloadAllBtn">Reload All</button>
+        <div class="panel">
+            <button class="btn btn-secondary btn-compact panel-toggle" id="togglePanel" type="button">Edit Embeds</button>
+            <div class="panel-content" id="panelContent" aria-hidden="true">
+                <div class="field-row">
+                    <input id="embedInput1" type="url" placeholder="Embed URL for Video 1" />
+                    <button class="btn btn-secondary btn-compact" type="button" data-target="1">Update</button>
+                </div>
+                <div class="field-row">
+                    <input id="embedInput2" type="url" placeholder="Embed URL for Video 2" />
+                    <button class="btn btn-secondary btn-compact" type="button" data-target="2">Update</button>
+                </div>
+                <div class="field-row">
+                    <input id="embedInput3" type="url" placeholder="Embed URL for Video 3" />
+                    <button class="btn btn-secondary btn-compact" type="button" data-target="3">Update</button>
+                </div>
+                <div class="field-row">
+                    <input id="embedInput4" type="url" placeholder="Embed URL for Video 4" />
+                    <button class="btn btn-secondary btn-compact" type="button" data-target="4">Update</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <script>
-        const REQUIRED_PIN = '1212';
-        const PIN_STORAGE_KEY = 'video_app_pin_ok';
-        const pinGate = document.getElementById('pinGate');
-        const pinInput = document.getElementById('pinInput');
-        const pinSubmit = document.getElementById('pinSubmit');
-        const pinError = document.getElementById('pinError');
-        const iframes = Array.from(document.querySelectorAll('iframe'));
-        let audioEnabled = true;
-
-        function safeStorageGet(key) {
-            try {
-                return localStorage.getItem(key);
-            } catch (error) {
-                return null;
-            }
-        }
-
-        function safeStorageSet(key, value) {
-            try {
-                localStorage.setItem(key, value);
-            } catch (error) {
-                return;
-            }
-        }
-
-        function setMuteParam(urlString, muteValue) {
-            try {
-                const url = new URL(urlString);
-                url.searchParams.set('mute', String(muteValue));
-                url.searchParams.set('autoplay', '1');
-                return url.toString();
-            } catch (error) {
-                const muteParam = 'mute=' + String(muteValue);
-                const autoplayParam = 'autoplay=1';
-                let nextUrl = urlString;
-                if (nextUrl.indexOf('?') === -1) {
-                    nextUrl += '?' + muteParam + '&' + autoplayParam;
-                } else {
-                    if (!/([?&])mute=/.test(nextUrl)) {
-                        nextUrl += '&' + muteParam;
-                    }
-                    if (!/([?&])autoplay=/.test(nextUrl)) {
-                        nextUrl += '&' + autoplayParam;
-                    }
-                }
-                return nextUrl;
-            }
-        }
-
-        function loadIframes() {
-            iframes.forEach((iframe, index) => {
-                const delay = index * 350;
-                setTimeout(() => {
-                    const targetSrc = iframe.getAttribute('data-src');
-                    if (!targetSrc) {
-                        return;
-                    }
-                    const shouldMute = index === 0 ? (audioEnabled ? 0 : 1) : 1;
-                    const nextSrc = setMuteParam(targetSrc, shouldMute);
-                    iframe.setAttribute('data-src', nextSrc);
-                    if (iframe.src !== nextSrc) {
-                        iframe.src = nextSrc;
-                    }
-                }, delay);
-            });
-        }
-
-        function unlockIfValidPin() {
-            const enteredPin = pinInput.value.trim();
-            if (enteredPin === REQUIRED_PIN) {
-                safeStorageSet(PIN_STORAGE_KEY, 'true');
-                pinGate.style.display = 'none';
-                pinInput.value = '';
-                pinError.textContent = '';
-                loadIframes();
-            } else {
-                pinError.textContent = 'Incorrect PIN';
-            }
-        }
-
-        if (safeStorageGet(PIN_STORAGE_KEY) === 'true') {
-            pinGate.style.display = 'none';
-            loadIframes();
-        } else {
-            pinInput.focus();
-        }
-
-        pinSubmit.addEventListener('click', unlockIfValidPin);
-        pinInput.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter') {
-                unlockIfValidPin();
-            }
-        });
-
-        iframes.forEach((iframe) => {
-            const wrapper = iframe.closest('.video-wrapper');
-            if (!wrapper) {
-                return;
-            }
-            const openButton = document.createElement('button');
-            openButton.type = 'button';
-            openButton.className = 'open-btn';
-            openButton.textContent = 'Open';
-            openButton.addEventListener('click', () => {
-                const targetSrc = iframe.getAttribute('data-src') || iframe.src;
-                if (targetSrc && targetSrc !== 'about:blank') {
-                    window.open(targetSrc, '_blank', 'noopener');
-                }
-            });
-            wrapper.appendChild(openButton);
-        });
-
-        function reloadIframe(iframe, index) {
-            const baseSrc = iframe.getAttribute('data-src') || iframe.src;
-            if (!baseSrc || baseSrc === 'about:blank') {
-                return;
-            }
-            const shouldMute = index === 0 ? (audioEnabled ? 0 : 1) : 1;
-            const nextSrc = setMuteParam(baseSrc, shouldMute);
-            try {
-                const url = new URL(nextSrc);
-                url.searchParams.set('refresh', Date.now());
-                iframe.src = url.toString();
-                iframe.setAttribute('data-src', url.toString());
-            } catch (error) {
-                const suffix = (nextSrc.indexOf('?') === -1 ? '?' : '&') + 'refresh=' + Date.now();
-                iframe.src = nextSrc + suffix;
-                iframe.setAttribute('data-src', iframe.src);
-            }
-        }
-
-        document.getElementById('reloadAllBtn').addEventListener('click', () => {
-            iframes.forEach((iframe, index) => reloadIframe(iframe, index));
-        });
-    </script>
+    <script src="app.js"></script>
 </body>
 </html>
